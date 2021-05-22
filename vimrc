@@ -72,5 +72,7 @@ autocmd! bufwritepost .vimrc source %
 set guifont=consolas:h11
 colorscheme desert
 
+set nofoldenable
+
 exec 'cd ' . fnameescape('F:\MyFile\')
 set autochdir
