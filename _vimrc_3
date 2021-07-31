@@ -1,0 +1,255 @@
+" Vim with all enhancements
+source $VIMRUNTIME/vimrc_example.vim
+
+" Use the internal diff if available.
+" Otherwise use the special 'diffexpr' for Windows.
+if &diffopt !~# 'internal'
+  set diffexpr=MyDiff()
+endif
+function MyDiff()
+  let opt = '-a --binary '
+  if &diffopt =~ 'icase' | let opt = opt . '-i ' | endif
+  if &diffopt =~ 'iwhite' | let opt = opt . '-b ' | endif
+  let arg1 = v:fname_in
+  if arg1 =~ ' ' | let arg1 = '"' . arg1 . '"' | endif
+  let arg1 = substitute(arg1, '!', '\!', 'g')
+  let arg2 = v:fname_new
+  if arg2 =~ ' ' | let arg2 = '"' . arg2 . '"' | endif
+  let arg2 = substitute(arg2, '!', '\!', 'g')
+  let arg3 = v:fname_out
+  if arg3 =~ ' ' | let arg3 = '"' . arg3 . '"' | endif
+  let arg3 = substitute(arg3, '!', '\!', 'g')
+  if $VIMRUNTIME =~ ' '
+    if &sh =~ '\<cmd'
+      if empty(&shellxquote)
+        let l:shxq_sav = ''
+        set shellxquote&
+      endif
+      let cmd = '"' . $VIMRUNTIME . '\diff"'
+    else
+      let cmd = substitute($VIMRUNTIME, ' ', '" ', '') . '\diff"'
+    endif
+  else
+    let cmd = $VIMRUNTIME . '\diff'
+  endif
+  let cmd = substitute(cmd, '!', '\!', 'g')
+  silent execute '!' . cmd . ' ' . opt . arg1 . ' ' . arg2 . ' > ' . arg3
+  if exists('l:shxq_sav')
+    let &shellxquote=l:shxq_sav
+  endif
+endfunction
+
+
+" Specify a directory for plugins
+" - For Neovim: stdpath('data') . '/plugged'
+" - Avoid using standard Vim directory names like 'plugin'
+call plug#begin('~/.vim/plugged')
+
+" Make sure you use single quotes
+
+" Shorthand notation; fetches https://github.com/junegunn/vim-easy-align
+Plug 'https://hub.fastgit.org/junegunn/vim-easy-align.git'
+
+Plug 'https://hub.fastgit.org/vim-airline/vim-airline.git'
+Plug 'https://hub.fastgit.org/vim-airline/vim-airline-themes.git'
+
+Plug 'https://hub.fastgit.org/Yggdroot/LeaderF.git', { 'do': ':LeaderfInstallCExtension' }
+
+Plug 'https://hub.fastgit.org/jiangmiao/auto-pairs.git',
+Plug 'https://hub.fastgit.org/preservim/nerdcommenter.git',
+
+" Any valid git URL is allowed
+Plug 'https://hub.fastgit.org/junegunn/vim-github-dashboard.git'
+
+" Multiple Plug commands can be written in a single line using | separators
+Plug 'https://hub.fastgit.org/SirVer/ultisnips.git'
+
+
+" On-demand loading
+Plug 'https://hub.fastgit.org/scrooloose/nerdtree.git', { 'on':  'NERDTreeToggle' }
+Plug 'https://hub.fastgit.org/tpope/vim-fireplace.git', { 'for': 'clojure' }
+
+" Using a non-default branch
+Plug 'https://hub.fastgit.org/rdnetto/YCM-Generator.git', { 'branch': 'stable' }
+
+" Using a tagged release; wildcard allowed (requires git 1.9.2 or above)
+Plug 'https://hub.fastgit.org/fatih/vim-go.git', { 'tag': '*' }
+
+" Plugin options
+Plug 'https://hub.fastgit.org/nsf/gocode.git', { 'tag': 'v.20150303', 'rtp': 'vim' }
+
+" Plugin outside ~/.vim/plugged with post-update hook
+Plug 'https://hub.fastgit.org/junegunn/fzf.git', { 'dir': '~/.fzf', 'do': './install --all' }
+
+" Unmanaged plugin (manually installed and updated)
+" Plug '~/my-prototype-plugin'
+
+Plug 'https://hub.fastgit.org/itchyny/lightline.vim'
+
+" Initialize plugin system
+call plug#end()
+
+""""""""""""""""
+let g:Lf_WindowPosition = 'popup'
+
+let g:Lf_PreviewInPopup = 1
+
+""""""""""""""""
+
+""""""" NERDCommeter """"""""""""""""""""""
+" Create default mappings
+let g:NERDCreateDefaultMappings = 1
+
+" Add spaces after comment delimiters by default
+let g:NERDSpaceDelims = 1
+
+" Use compact syntax for prettified multi-line comments
+let g:NERDCompactSexyComs = 1
+
+" Align line-wise comment delimiters flush left instead of following code indentation
+let g:NERDDefaultAlign = 'left'
+
+" Set a language to use its alternate delimiters by default
+let g:NERDAltDelims_java = 1
+
+" Add your own custom formats or override the defaults
+let g:NERDCustomDelimiters = { 'c': { 'left': '/**','right': '*/' } }
+
+" Allow commenting and inverting empty lines (useful when commenting a region)
+let g:NERDCommentEmptyLines = 1
+
+" Enable trimming of trailing whitespace when uncommenting
+let g:NERDTrimTrailingWhitespace = 1
+
+" Enable NERDCommenterToggle to check all selected lines is commented or not 
+let g:NERDToggleCheckAllLines = 1
+
+" \cc 注释当前行和选中行
+" \cn 没有发现和\cc有区别
+" \c<空格> 如果被选区域有部分被注释，则对被选区域执行取消注释操作，其它情况执行反转注释操作
+" \cm 对被选区域用一对注释符进行注释，前面的注释对每一行都会添加注释
+" \ci 执行反转注释操作，选中区域注释部分取消注释，非注释部分添加注释
+" \cs 添加性感的注释，代码开头介绍部分通常使用该注释
+" \cy 添加注释，并复制被添加注释的部分
+" \c$ 注释当前光标到改行结尾的内容
+" \cA 跳转到该行结尾添加注释，并进入编辑模式
+"\ca 转换注释的方式，比如： /**/和//
+"\cl \cb 左对齐和左右对其，左右对其主要针对/**/
+"\cu 取消注释
+
+""""""" NERDCommeter """"""""""""""""""""""
+
+nnoremap <leader>n :NERDTreeFocus<CR>
+nnoremap <C-n> :NERDTree<CR>
+nnoremap <C-n> :NERDTreeToggle<CR>
+" nnoremap <C-f> :NERDTreeFind<CR>
+
+
+filetype on
+filetype indent on
+filetype plugin on
+
+" 设置文件编码
+set encoding=utf-8
+set termencoding=utf-8
+set fileencoding=utf-8
+set fileencodings=ucs-bom,utf-8,chinese,cp936
+
+set nocompatible
+set history=1000
+
+set magic
+
+" 不生成多余文件
+set nobackup
+set noundofile
+set noswapfile
+
+
+" tab相关变更
+" 设置Tab键的宽度        [等同的空格个数]
+set tabstop=4
+" 每一次缩进对应的空格数
+set shiftwidth=4
+" 按退格键时可以一次删掉 4 个空格
+set softtabstop=4
+" insert tabs on the start of a line according to shiftwidth, not tabstop 按退格键时可以一次删掉 4 个空格
+set smarttab
+" 将Tab自动转化成空格[需要输入真正的Tab键时，使用 Ctrl+V + Tab]
+set expandtab
+" 缩进时，取整 use multiple of shiftwidth when indenting with '<' and '>'
+set shiftround
+
+set autoindent
+set smartindent
+set nofoldenable
+
+" 跳转并高亮匹配的括号
+set showmatch
+set matchtime=2
+
+set hlsearch
+" 增量搜索
+set incsearch 
+set ignorecase
+set smartcase
+
+set autoread
+set fdm=syntax
+
+" 提示声音
+set novisualbell
+set noerrorbells
+set t_vb=
+set tm=500
+
+" 高亮
+set cursorline
+
+" 显示输入的命令
+set showcmd
+" 模式
+set showmode
+
+set nu
+" 取消换行
+set nowrap
+
+set t_Co=256
+set clipboard=unnamed
+
+set go=
+set guioptions-=T
+set guioptions-=m
+colorscheme desert
+
+syntax enable
+syntax on
+
+set autowrite
+" 长行自动下移
+set wrap
+set noeb
+
+set encoding=utf-8
+set termencoding=utf-8
+set fileencoding=utf-8
+" 自动判断编码时，尝试以下编码
+set fileencodings=ucs-bom,utf-8,cp936,gb18030,euc-jp,euc-kr,latin1
+set helplang=cn
+
+" vim文件修改自动加载
+autocmd! bufwritepost _vimrc source %
+autocmd! bufwritepost .vimrc source %
+
+"set guifont=courier_new:h11
+set guifont=consolas:h11
+colorscheme desert
+
+exec 'cd ' . fnameescape('F:\')
+set autochdir
+
+language messages zh_CN.utf-8
+
+source $VIMRUNTIME/delmenu.vim
+source $VIMRUNTIME/menu.vim
